@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Displays the contents of the current directory in list format.
+# Only displays the part of the name after the first dash.
+
+# Capture the list of files in the current directory
+list=$(ls)
+
+# Iterate over each item in the list of files
+for i in $list; do
+  # Use 'cut' to extract the part of the name after the first dash
+  echo "$i" | cut -d '-' -f2
+done
