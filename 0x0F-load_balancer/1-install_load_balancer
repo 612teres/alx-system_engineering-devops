@@ -9,7 +9,7 @@ frontend haproxy_balancer
     default_backend webservers
     
 backend webservers
-    balance roundrobin
+    ubuntu
     server 311000-web-01 34.229.254.78:80 check
     server 311000-web-02 100.26.159.154:80 check
 "
