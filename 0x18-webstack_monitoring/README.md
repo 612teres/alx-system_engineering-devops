@@ -12,5 +12,5 @@ on my three HBnB servers.
     * Second line: `Access Key`
 
 * **1. Monitor your server**
-  * For this task, I configured Sumo Logic to monitor my server's memory, CPU, network
+  * For this task, I configured datadog-agent to monitor my server's memory, CPU, network
   and disk.
