@@ -13,15 +13,25 @@ Our database decided to take a nap instead of working efficiently. Misconfigurat
 Timeline
 
 14:00 - 🚨 Issue detected: Monitoring alert for high latency.
+
 14:05 - 👀 Confirmed: Manual check by on-call engineer.
+
 14:10 - 🕵️‍♂️ Investigated: Assumed a DDoS attack or high traffic.
+
 14:25 - 🔍 Misleading Path: Checked network traffic and firewall – no issues.
+
 14:45 - 🚀 Escalated: Passed to the database team.
+
 15:00 - 📜 Logs Reviewed: Found slow queries and table locks.
+
 15:15 - 🛠 Analyzed: Suboptimal query caching and indexing discovered.
+
 15:30 - 🔧 Optimized: Adjusted cache size and added indexes.
+
 16:00 - 📈 Improvements: Page load times reduced.
+
 16:30 - 🎉 Resolved: Normal performance restored, alerts cleared.
+
 Root Cause and Resolution
 Root Cause:
 Our database was like a poorly organized library – finding anything took forever. The query cache was too small, and our indexing was non-existent, making data retrieval painfully slow.
