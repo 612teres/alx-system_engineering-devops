@@ -1,65 +1,48 @@
-# Postmortem
+Web Stack Outage on ALX THE ROOM FELLOWSHIP KENYA
+Issue Summary
+Duration of the Outage:
+Start Time: 2024-06-15 14:00 EAT
+End Time: 2024-06-15 16:30 EAT
 
-Upon the release of ALX's System Engineering & DevOps project 0x19,
-approximately 06:00 West African Time (WAT) here in Nigeria, an outage occurred on an isolated
-Ubuntu 14.04 container running an Apache web server. GET requests on the server led to
-`500 Internal Server Error`'s, when the expected response was an HTML file defining a
-simple Holberton WordPress site.
+Impact:
+Imagine trying to get through a crowded market on a hot day – that's what our website felt like. Pages were loading slower than a snail on vacation. Approximately 85% of our users were affected, leading to frustration and numerous complaints.
 
-## Debugging Process
+Root Cause:
+Our database decided to take a nap instead of working efficiently. Misconfigurations led to inefficient queries that overloaded the server, causing delays.
 
-Bug debugger Brennan (BDB... as in my actual initials... made that up on the spot, pretty
-good, huh?) encountered the issue upon opening the project and being, well, instructed to
-address it, roughly 19:20 PST. He promptly proceeded to undergo solving the problem.
+Timeline
 
-1. Checked running processes using `ps aux`. Two `apache2` processes - `root` and `www-data` -
-were properly running.
+14:00 - 🚨 Issue detected: Monitoring alert for high latency.
+14:05 - 👀 Confirmed: Manual check by on-call engineer.
+14:10 - 🕵️‍♂️ Investigated: Assumed a DDoS attack or high traffic.
+14:25 - 🔍 Misleading Path: Checked network traffic and firewall – no issues.
+14:45 - 🚀 Escalated: Passed to the database team.
+15:00 - 📜 Logs Reviewed: Found slow queries and table locks.
+15:15 - 🛠 Analyzed: Suboptimal query caching and indexing discovered.
+15:30 - 🔧 Optimized: Adjusted cache size and added indexes.
+16:00 - 📈 Improvements: Page load times reduced.
+16:30 - 🎉 Resolved: Normal performance restored, alerts cleared.
+Root Cause and Resolution
+Root Cause:
+Our database was like a poorly organized library – finding anything took forever. The query cache was too small, and our indexing was non-existent, making data retrieval painfully slow.
 
-2. Looked in the `sites-available` folder of the `/etc/apache2/` directory. Determined that
-the web server was serving content located in `/var/www/html/`.
+Resolution:
 
-3. In one terminal, ran `strace` on the PID of the `root` Apache process. In another, curled
-the server. Expected great things... only to be disappointed. `strace` gave no useful
-information.
+Query Cache Adjustment: Increased the cache size from 64MB to 256MB – like giving the librarian a coffee.
+Indexing: Added indexes to frequently accessed tables – organized the library.
+Query Optimization: Reviewed and optimized common queries – streamlined the search process.
+These changes turned our database from a sleepy librarian into a speed-reading champion.
 
-4. Repeated step 3, except on the PID of the `www-data` process. Kept expectations lower this
-time... but was rewarded! `strace` revelead an `-1 ENOENT (No such file or directory)` error
-occurring upon an attempt to access the file `/var/www/html/wp-includes/class-wp-locale.phpp`.
+Corrective and Preventative Measures
+Improvements and Fixes:
 
-5. Looked through files in the `/var/www/html/` directory one-by-one, using Vim pattern
-matching to try and locate the erroneous `.phpp` file extension. Located it in the
-`wp-settings.php` file. (Line 137, `require_once( ABSPATH . WPINC . '/class-wp-locale.php' );`).
+Enhanced Monitoring: Implement more granular monitoring for database performance metrics, including query execution times and cache hit rates.
+Regular Audits: Schedule regular database configuration and performance audits to ensure optimal settings are maintained.
+Query Optimization: Conduct periodic reviews and optimization of frequently executed queries.
+Tasks to Address the Issue:
 
-6. Removed the trailing `p` from the line.
-
-7. Tested another `curl` on the server. 200 A-ok!
-
-8. Wrote a Puppet manifest to automate fixing of the error.
-
-## Summation
-
-In short, a typo. Gotta love'em. In full, the WordPress app was encountering a critical
-error in `wp-settings.php` when tyring to load the file `class-wp-locale.phpp`. The correct
-file name, located in the `wp-content` directory of the application folder, was
-`class-wp-locale.php`.
-
-Patch involved a simple fix on the typo, removing the trailing `p`.
-
-## Prevention
-
-This outage was not a web server error, but an application error. To prevent such outages
-moving forward, please keep the following in mind.
-
-* Test! Test test test. Test the application before deploying. This error would have arisen
-and could have been addressed earlier had the app been tested.
-
-* Status monitoring. Enable some uptime-monitoring service such as
-[UptimeRobot](./https://uptimerobot.com/) to alert instantly upon outage of the website.
-
-Note that in response to this error, I wrote a Puppet manifest
-[0-strace_is_your_friend.pp](https://github.com/bdbaraban/holberton-system_engineering-devops/blob/master/0x17-web_stack_debugging_3/0-strace_is_your_friend.pp)
-to automate fixing of any such identitical errors should they occur in the future. The manifest
-replaces any `phpp` extensions in the file `/var/www/html/wp-settings.php` with `php`.
-
-But of course, it will never occur again, because we're programmers, and we never make
-errors! :wink:
+Patch Database Server: Apply the latest patches and updates to the database server software.
+Add Monitoring: Implement monitoring tools specifically for database performance, such as slow query logs and table lock alerts.
+Optimize Queries: Continuously review and optimize new and existing queries, especially those that show high execution times.
+Training: Conduct training sessions for the engineering team on best practices for database configuration and query optimization.
+By addressing these areas, we can significantly reduce the likelihood of similar outages occurring in the future and ensure a more resilient and performant web stack for our users.
